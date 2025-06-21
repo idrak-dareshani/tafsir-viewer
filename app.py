@@ -96,7 +96,7 @@ def translate_with_gpt4o(text, target_lang):
             return "[Error: OpenAI API key not set in environment variables.]"
         
         response = client.responses.create(
-            model="gpt-4o",
+            model="gpt-4o-mini",
             instructions="You are a translator and Islamic scholar. Translate the text while preserving its religious significance.",
             input=prompt,
             temperature=0.5
