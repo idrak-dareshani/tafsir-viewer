@@ -68,7 +68,3 @@ See [requirements.txt](requirements.txt) for the full list. Key packages:
 ## License
 
 MIT License (add your license here).
-
----
-
-*Created with ❤️
