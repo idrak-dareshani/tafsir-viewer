@@ -64,7 +64,6 @@ See [requirements.txt](requirements.txt) for the full list. Key packages:
 
 - `streamlit`
 - `openai`
-- `python-dotenv`
 
 ## License
 
