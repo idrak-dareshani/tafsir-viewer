@@ -92,14 +92,28 @@ if selected_surah and ayah_range:
         st.warning("No tafsir entries found for the selected criteria.")
 
     for tafsir in matching_tafsirs:
+        # Header with Surah and Ayah info
+        
         st.markdown(f"### Surah {tafsir['surah_name_arabic']} ({tafsir['surah_name_english']}) - Ayah {tafsir['ayah_number']}")
+    
         tafsir_text = tafsir['tafsir_text']
+
+        # clean the tafsir text
+        tafsir_text = tafsir_text.replace("الباحث القرآني", "")
+
+        # Select content and font
         if selected_lang != "None":
-            st.markdown(f"<div style='text-align: justify; line-height: 2;'>We are working on the translation...</div>", unsafe_allow_html=True)
-        elif selected_lang != "None":
-            st.warning("Translation not available for this tafsir.")
+            content = tafsir_text
+            font_family = "'Segoe UI', sans-serif"
         else:
-            st.markdown(f"<div style='text-align: right; line-height: 2; font-size: 1.5em'>{tafsir_text}</div>", unsafe_allow_html=True)
+            content = tafsir_text
+            font_family = "'system-ui', serif"
+
+        if selected_lang != "None":
+            st.markdown(f"<div style='text-align: justify; line-height: 2; white-space: pre-line;'>We are working on the translation...</div>", unsafe_allow_html=True)
+        else:
+            st.markdown(f"<div style='direction: rtl; font-size: 1.15rem; text-align: justify; line-height: 2; white-space: pre-line;'>{content}</div>", unsafe_allow_html=True)
+        
         st.markdown("---")
 else:
     st.info("Please select a Surah and Ayah(s) to view tafsir.")
