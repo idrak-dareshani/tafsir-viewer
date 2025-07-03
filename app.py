@@ -19,7 +19,7 @@ st.set_page_config(
 st.markdown("""
 <style>
     /* Import Google Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic&family=Noto+Nastaliq+Urdu&family=Inter:wght@300;400;500;600;700&display=swap');
 
     /* Remove extra space above title */
     .block-container {
@@ -137,7 +137,23 @@ st.markdown("""
     /* Arabic Text Styling */
     .arabic-text {
         direction: rtl;
-        font-family: 'Amiri', serif;
+        font-family: 'Amiri', 'Noto Naskh Arabic', 'Scheherazade New', serif;
+        font-size: 1.2rem;
+        line-height: 1.8;
+        text-align: justify;
+        white-space: pre-line;
+        padding: 1rem;
+        background: linear-gradient(135deg, #f3eac2 0%, #e0c3fc 100%);
+        border-radius: 8px;
+        border-right: 4px solid #ff6b6b;
+        box-shadow: 0 3px 10px rgba(255, 107, 107, 0.1);
+        margin-bottom: 0.5rem;
+    }
+
+    /* Urdu Text Styling */
+    .urdu-text {
+        direction: rtl;
+        font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Nafees Web Naskh', serif;
         font-size: 1.2rem;
         line-height: 1.8;
         text-align: justify;
@@ -199,6 +215,12 @@ st.markdown("""
             line-height: 1.7;
         }
         
+        .urdu-text {
+            font-size: 1.1rem;
+            padding: 0.8rem;
+            line-height: 1.7;
+        }
+
         .translated-text {
             font-size: 0.95rem;
             padding: 0.8rem;
@@ -331,7 +353,12 @@ if selected_surah and ayah_range:
 
                 # Display the tafsir text with appropriate styling
                 if selected_lang != "None":
-                    st.markdown(f'<div class="translated-text scrollable-text">{tafsir_text}</div>', unsafe_allow_html=True)
+                    if selected_lang == "Urdu":
+                        lang_class = "urdu-text"
+                    else:
+                        lang_class = "translated-text"
+
+                    st.markdown(f'<div class="{lang_class} scrollable-text">{tafsir_text}</div>', unsafe_allow_html=True)
                 else:
                     st.markdown(f'<div class="arabic-text scrollable-text">{tafsir_text}</div>', unsafe_allow_html=True)
 
