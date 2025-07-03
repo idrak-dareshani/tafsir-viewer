@@ -5,7 +5,7 @@ import streamlit as st
 
 # --- App Title ---
 st.set_page_config(page_title="Tafsir Viewer", layout="wide")
-st.title("📖 Qur'anic Tafsir Viewer")
+st.title("📖 Quran Tafsir Viewer")
 
 # --- Load JSON from author/surah-structured folder ---
 @st.cache_data
@@ -39,16 +39,17 @@ author = st.sidebar.selectbox("Select Author", authors)
 
 # Select translation language
 language_codes = {
+    "Bengali": "bn",
     "English": "en",
-    "Urdu": "ur",
     "French": "fr",
     "German": "de",
-    "Spanish": "es",
+    "Hindi": "hi",
     "Indonesian": "id",
-    "Bengali": "bn",
-    "Turkish": "tr",
     "Malay": "ms",
+    "Spanish": "es",
     "Swahili": "sw",
+    "Turkish": "tr",
+    "Urdu": "ur"
 }
 
 # Filter data by selected author
@@ -110,6 +111,7 @@ if selected_surah and ayah_range:
             font_family = "'system-ui', serif"
 
         if selected_lang != "None":
+            # do the translator work here
             st.markdown(f"<div style='text-align: justify; line-height: 2; white-space: pre-line;'>We are working on the translation...</div>", unsafe_allow_html=True)
         else:
             st.markdown(f"<div style='direction: rtl; font-size: 1.15rem; text-align: justify; line-height: 2; white-space: pre-line;'>{content}</div>", unsafe_allow_html=True)
