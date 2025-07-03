@@ -2,6 +2,10 @@ import json
 import re
 import os
 import streamlit as st
+from translate import TafsirTranslator
+
+base_folder = "data"
+cache_folder = "cache"
 
 # --- App Title ---
 st.set_page_config(page_title="Tafsir Viewer", layout="wide")
@@ -11,7 +15,6 @@ st.title("📖 Quran Tafsir Viewer")
 @st.cache_data
 def load_all_tafsir_data():
     all_data = []
-    base_folder = "data"
     for author_folder in os.listdir(base_folder):
         author_path = os.path.join(base_folder, author_folder)
         if os.path.isdir(author_path):
@@ -68,14 +71,15 @@ if selected_surah:
     # Get ayahs for the selected surah
     available_ayahs = sorted([item["ayah_number"] for item in filtered_data if item["surah_number"] == selected_surah])
 
-    # Select ayah(s)
-    ayah_mode = st.sidebar.radio("Ayah Selection", ["Single Ayah", "Range"], index=0)
-    if ayah_mode == "Single Ayah":
-        selected_ayah = st.sidebar.selectbox("Select Ayah", available_ayahs)
-        ayah_range = [selected_ayah]
-    elif ayah_mode == "Range":
-        start, end = st.sidebar.slider("Select Ayah Range", min_value=min(available_ayahs), max_value=max(available_ayahs), value=(min(available_ayahs), max(available_ayahs)))
-        ayah_range = list(range(start, end + 1))
+    selected_ayah = st.sidebar.selectbox("Select Ayah", available_ayahs)
+    ayah_range = [selected_ayah]
+
+    # # Select ayah(s)
+    # ayah_mode = st.sidebar.radio("Ayah Selection", ["Single Ayah", "Range"], index=0)
+    # if ayah_mode == "Single Ayah":
+    # elif ayah_mode == "Range":
+    #     start, end = st.sidebar.slider("Select Ayah Range", min_value=min(available_ayahs), max_value=max(available_ayahs), value=(min(available_ayahs), max(available_ayahs)))
+    #     ayah_range = list(range(start, end + 1))
 
 selected_lang = st.sidebar.selectbox("Translate Tafsir To", ["None"] + list(language_codes.keys()))
 
@@ -97,25 +101,34 @@ if selected_surah and ayah_range:
         
         st.markdown(f"### Surah {tafsir['surah_name_arabic']} ({tafsir['surah_name_english']}) - Ayah {tafsir['ayah_number']}")
     
-        tafsir_text = tafsir['tafsir_text']
-
-        # clean the tafsir text
-        tafsir_text = tafsir_text.replace("الباحث القرآني", "")
-
-        # Select content and font
+        file_path = os.path.join(base_folder, author, f"{selected_surah}_{selected_ayah}.txt")
+        with open(file_path, 'r', encoding='utf-8') as f:
+            tafsir_text = f.read()
         if selected_lang != "None":
-            content = tafsir_text
-            font_family = "'Segoe UI', sans-serif"
-        else:
-            content = tafsir_text
-            font_family = "'system-ui', serif"
+            file_path = os.path.join(cache_folder, language_codes[selected_lang], author, f"{selected_surah}_{selected_ayah}.txt")
+            if os.path.exists(file_path):
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    tafsir_text = f.read()
+            else:
+                translator = TafsirTranslator()
+                result = translator.translate_tafsir(tafsir_text, "ar", language_codes[selected_lang])
+                tafsir_text = result["translated_text"]
+
+                # create language directory (if not exists)
+                lang_dir = os.path.join(cache_folder, language_codes[selected_lang])
+                os.makedirs(lang_dir, exist_ok=True)
+
+                # create author directory (if not exists)
+                auth_dir = os.path.join(lang_dir, author)
+                os.makedirs(auth_dir, exist_ok=True)
+
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(tafsir_text)
 
         if selected_lang != "None":
-            # do the translator work here
-            st.markdown(f"<div style='text-align: justify; line-height: 2; white-space: pre-line;'>We are working on the translation...</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='text-align: justify; line-height: 2; white-space: pre-line;'>{tafsir_text}</div>", unsafe_allow_html=True)
         else:
-            st.markdown(f"<div style='direction: rtl; font-size: 1.15rem; text-align: justify; line-height: 2; white-space: pre-line;'>{content}</div>", unsafe_allow_html=True)
-        
-        st.markdown("---")
+            st.markdown(f"<div style='direction: rtl; font-size: 1.15rem; text-align: justify; line-height: 2; white-space: pre-line;'>{tafsir_text}</div>", unsafe_allow_html=True)
+
 else:
     st.info("Please select a Surah and Ayah(s) to view tafsir.")
